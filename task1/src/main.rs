@@ -1,7 +1,12 @@
 mod calculator;
 mod sorter;
-
 use std::io;
+
+fn get_input() -> String {
+    let mut input = String::new();
+    io::stdin().read_line(&mut input).expect("读取输入失败");
+    input.trim().to_string() // 返回去掉空格的字符串
+}
 
 fn main() {
     loop {
@@ -10,11 +15,9 @@ fn main() {
         println!("2. 排序");
         println!("0. 退出");
 
-        let mut choice = String::new();
-        io::stdin().read_line(&mut choice).unwrap();
-        let choice = choice.trim();
+        let choice = get_input();
 
-        match choice {
+        match choice.as_str() {
             "1" => calculator::calculate(),
             "2" => sorter::prompt_sorting(),
             "0" => {

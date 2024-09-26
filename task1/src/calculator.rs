@@ -2,86 +2,64 @@ use std::io;
 
 pub fn calculate() {
     loop {
-        println!("\n选择功能:");
+        println!("\n选择操作:");
         println!("1. 加法");
         println!("2. 减法");
         println!("3. 乘法");
         println!("4. 除法");
         println!("0. 返回主菜单");
 
-        let mut choice = String::new();
-        io::stdin().read_line(&mut choice).unwrap();
-        let choice = choice.trim();
+        let operation = get_input();
 
-        if choice == "0" {
-            break; // 返回主菜单
-        }
-
-        let mut num1 = String::new();
-        println!("请输入第一个数字：");
-        io::stdin().read_line(&mut num1).unwrap();
-        let num1: f64 = num1.trim().parse().unwrap();
-
-        if choice != "5" && choice != "6" {
-            let mut num2 = String::new();
-            println!("请输入第二个数字：");
-            io::stdin().read_line(&mut num2).unwrap();
-            let num2: f64 = num2.trim().parse().unwrap();
-
-            match choice {
-                "1" => println!("{} + {} = {}", num1, num2, add(num1, num2)),
-                "2" => println!("{} - {} = {}", num1, num2, subtract(num1, num2)),
-                "3" => println!("{} * {} = {}", num1, num2, multiply(num1, num2)),
-                "4" => match divide(num1, num2) {
-                    Ok(result) => println!("{} / {} = {}", num1, num2, result),
-                    Err(e) => println!("{}", e),
-                },
-                _ => {}
-            }
-        } else {
-            // 处理平方和开方
-            match choice {
-                "5" => println!("{} 的平方 = {}", num1, square(num1)),
-                "6" => match square_root(num1) {
-                    Ok(result) => println!("{} 的平方根 = {}", num1, result),
-                    Err(e) => println!("{}", e),
-                },
-                _ => {}
-            }
+        match operation.as_str() {
+            "1" => perform_operation("+"),
+            "2" => perform_operation("-"),
+            "3" => perform_operation("*"),
+            "4" => perform_operation("/"),
+            "0" => break,
+            _ => println!("无效的选项，请重新输入"),
         }
     }
 }
 
-// 加法、减法、乘法、除法、平方和开方函数...
-
-pub fn add(x: f64, y: f64) -> f64 {
-    x + y
+fn get_input() -> String {
+    let mut input = String::new();
+    io::stdin().read_line(&mut input).expect("读取输入失败");
+    input.trim().to_string() // 返回去掉空格的字符串
 }
 
-pub fn subtract(x: f64, y: f64) -> f64 {
-    x - y
-}
+fn perform_operation(op: &str) {
+    println!("请输入第一个数字:");
+    let num1 = get_input();
+    let num1: f64 = match num1.parse() {
+        Ok(n) => n,
+        Err(_) => {
+            println!("请输入一个有效的数字");
+            return;
+        }
+    };
 
-pub fn multiply(x: f64, y: f64) -> f64 {
-    x * y
-}
+    println!("请输入第二个数字:");
+    let num2 = get_input();
+    let num2: f64 = match num2.parse() {
+        Ok(n) => n,
+        Err(_) => {
+            println!("请输入一个有效的数字");
+            return;
+        }
+    };
 
-pub fn divide(x: f64, y: f64) -> Result<f64, String> {
-    if y != 0.0 {
-        Ok(x / y)
-    } else {
-        Err(String::from("错误：不能除以零"))
-    }
-}
-
-pub fn square(x: f64) -> f64 {
-    x * x
-}
-
-pub fn square_root(x: f64) -> Result<f64, String> {
-    if x >= 0.0 {
-        Ok(x.sqrt())
-    } else {
-        Err(String::from("错误：负数没有实数平方根"))
+    match op {
+        "+" => println!("结果: {}", num1 + num2),
+        "-" => println!("结果: {}", num1 - num2),
+        "*" => println!("结果: {}", num1 * num2),
+        "/" => {
+            if num2 != 0.0 {
+                println!("结果: {}", num1 / num2);
+            } else {
+                println!("错误: 除数不能为零");
+            }
+        }
+        _ => println!("无效的操作"),
     }
 }
