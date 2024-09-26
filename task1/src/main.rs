@@ -5,7 +5,7 @@ use std::io;
 fn get_input() -> String {
     let mut input = String::new();
     io::stdin().read_line(&mut input).expect("读取输入失败");
-    input.trim().to_string() // 返回去掉空格的字符串
+    input.trim().to_string() 
 }
 
 fn main() {
