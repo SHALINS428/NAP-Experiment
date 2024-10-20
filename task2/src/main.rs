@@ -1,37 +1,27 @@
 mod logger;
 mod string_manager;
+mod math_utils;
+mod thread_pool;
+mod config;
 
-use std::thread;
-use string_manager::StringManager;
 use logger::Logger;
+// use string_manager::StringManager;
+use thread_pool::ThreadPool;
+use config::Config;
+use std::convert::TryInto;
 
 fn main() {
+    let config = Config::new(); // 假设你有一个Config结构体来解析命令行参数
     let logger = Logger::new();
+    let pool = ThreadPool::new(config.threads);
 
-    // 创建一个字符串管理器
-    let mut manager = StringManager::new();
-
-    // 添加字符串
-    manager.add_string("hello".to_string());
-    manager.add_string("world".to_string());
-    manager.add_string("rust".to_string());
-    manager.add_string("programming".to_string());
-
-    // 获取最长字符串
-    let longest = manager.get_longest();
-    logger.log(&format!("The longest string is: {}", longest));
-
-    // 创建多个线程
-    let handles: Vec<_> = (0..5)
-        .map(|i| {
-            let logger_clone = logger.clone();
-            thread::spawn(move || {
-                logger_clone.log(&format!("Thread {} is running", i));
-            })
-        })
-        .collect();
-
-    for handle in handles {
-        handle.join().unwrap();
+    for i in 0..config.tasks {
+        let logger_clone = logger.clone();
+        pool.execute(move || {
+            let result = math_utils::factorial(i.try_into().unwrap()); // 确保转换
+            logger_clone.log(&format!("Factorial of {} is {}", i, result));
+        });
     }
+
+    pool.join(); // 确保join方法是公有的
 }
